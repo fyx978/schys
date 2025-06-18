@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>华阳山比例尺教学演示 - 顺昌县七年级数学校本教材</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=XTLGruulpmUp0kZjntoMgr1RCyyUOaRv"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0d324d, #1a2a6c);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #1a5fb4, #2980b9);
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+            position: relative;
+            border-bottom: 4px solid #f1c40f;
+        }
+        
+        .logo {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 30px;
+        }
+        
+        .logo i {
+            font-size: 24px;
+            margin-right: 10px;
+            color: #f1c40f;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+        .map-container {
+            width: 100%;
+            height: 500px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            position: relative;
+            margin-bottom: 20px;
+            border: 1px solid #ced4da;
+        }
+        
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .map-overlay {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            max-width: 180px;
+            border: 2px solid #1a5fb4;
+            font-size: 0.9rem;
+        }
+        
+        .map-overlay h3 {
+            color: #1a5fb4;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+        }
+        
+        .map-overlay h3 i {
+            margin-right: 6px;
+            color: #e74c3c;
+            font-size: 1.1rem;
+        }
+        
+        .legend {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            margin-right: 8px;
+        }
+        
+        .info-btn {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            background: #1a5fb4;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .info-btn:hover {
+            background: #134b8f;
+            transform: scale(1.1);
+        }
+        
+        .info-btn i {
+            font-size: 1.4rem;
+        }
+        
+        .location-card {
+            position: absolute;
+            bottom: 15px;
+            left: 65px;
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            border: 2px solid #1a5fb4;
+            z-index: 1000;
+            max-width: 300px;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .location-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #1a5fb4, #f1c40f);
+        }
+        
+        .location-card h3 {
+            color: #1a5fb4;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+        }
+        
+        .location-card h3 i {
+            margin-right: 8px;
+            color: #e74c3c;
+        }
+        
+        .location-card p {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .stat {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 3px solid #1a5fb4;
+        }
+        
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1a5fb4;
+            margin: 5px 0;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.8rem;
+        }
+        
+        .controls-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .controls-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .control-panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            color: #1a5fb4;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            border-left: 4px solid #f1c40f;
+        }
+        
+        h2 i {
+            margin-right: 10px;
+            color: #1a5fb4;
+        }
+        
+        .scale-display {
+            background: white;
+            border: 2px solid #1a5fb4;
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scale-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #e74c3c;
+            margin: 15px 0;
+        }
+        
+        .scale-line {
+            height: 6px;
+            background: linear-gradient(90deg, #e74c3c, #f39c12);
+            margin: 15px 0;
+            border-radius: 3px;
+            position: relative;
+        }
+        
+        .scale-label {
+            position: absolute;
+            top: -25px;
+            font-size: 14px;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .scale-label.start {
+            left: 0;
+        }
+        
+        .scale-label.end {
+            right: 0;
+        }
+        
+        .scale-marker {
+            position: absolute;
+            top: -8px;
+            width: 2px;
+            height: 20px;
+            background: #e74c3c;
+        }
+        
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            background: #3498db;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn.active {
+            background: #1a5fb4;
+        }
+        
+        .btn.satellite {
+            background: #27ae60;
+        }
+        
+        .btn.hybrid {
+            background: #9b59b6;
+        }
+        
+        .exercise-panel {
+            background: #fff8e1;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 2px solid #f1c40f;
+        }
+        
+        .exercise-panel h3 {
+            color: #d35400;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .exercise-panel h3 i {
+            margin-right: 10px;
+            color: #d35400;
+        }
+        
+        .problem {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .option {
+            background: #e3f2fd;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .option:hover {
+            background: #bbdefb;
+        }
+        
+        .option.correct {
+            background: #c8e6c9;
+            border: 2px solid #4caf50;
+        }
+        
+        .option.incorrect {
+            background: #ffcdd2;
+            border: 2px solid #f44336;
+        }
+        
+        .result {
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .result.correct {
+            background: #c8e6c9;
+            color: #2e7d32;
+            display: block;
+        }
+        
+        .result.incorrect {
+            background: #ffcdd2;
+            color: #c62828;
+            display: block;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(90deg, #1a5fb4, #2c3e50);
+            color: #ecf0f1;
+            font-size: 0.9rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .footer-links a {
+            color: #ecf0f1;
+            text-decoration: none;
+        }
+        
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-ruler-combined"></i>
+                <span>比例尺教学</span>
+            </div>
+            <h1>顺昌县华阳山比例尺演示平台</h1>
+            <p class="subtitle">七年级数学教材专用 - 通过卫星地图动态展示比例尺概念与应用</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="map-container">
+                <div id="map"></div>
+                
+                <div class="map-overlay">
+                    <h3><i class="fas fa-map-marker-alt"></i> 地图图例</h3>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #27ae60;"></div>
+                            <div>森林</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #d35400;"></div>
+                            <div>山地</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #3498db;"></div>
+                            <div>水系</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #9b59b6;"></div>
+                            <div>景点</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="info-btn" id="infoToggle">
+                    <i class="fas fa-info"></i>
+                </button>
+                
+                <div class="location-card" id="locationInfo">
+                    <h3><i class="fas fa-mountain"></i> 华阳山地理信息</h3>
+                    <p>华阳山位于福建省顺昌县境内，主峰海拔1300米，森林覆盖率达92%。</p>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-value">1,300m</div>
+                            <div class="stat-label">最高海拔</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">92%</div>
+                            <div class="stat-label">森林覆盖率</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">25℃</div>
+                            <div class="stat-label">夏季均温</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">150+</div>
+                            <div class="stat-label">动植物种类</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls-section">
+                <div class="control-panel">
+                    <div class="control-group">
+                        <h2><i class="fas fa-ruler"></i> 比例尺演示</h2>
+                        <div class="scale-display">
+                            <div>当前地图比例尺</div>
+                            <div class="scale-value">1:25,000</div>
+                            <div class="scale-line">
+                                <div class="scale-label start">0</div>
+                                <div class="scale-label end">250米</div>
+                                <div class="scale-marker" style="left: 0%;"></div>
+                                <div class="scale-marker" style="left: 25%;"></div>
+                                <div class="scale-marker" style="left: 50%;"></div>
+                                <div class="scale-marker" style="left: 75%;"></div>
+                                <div class="scale-marker" style="left: 100%;"></div>
+                            </div>
+                            <div>地图上1厘米 ≈ 实地距离250米</div>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h2><i class="fas fa-map"></i> 地图控制</h2>
+                        <div class="btn-group">
+                            <button class="btn" id="normalMap">
+                                <i class="fas fa-map"></i> 普通地图
+                            </button>
+                            <button class="btn satellite" id="satelliteMap">
+                                <i class="fas fa-satellite"></i> 卫星地图
+                            </button>
+                            <button class="btn hybrid" id="hybridMap">
+                                <i class="fas fa-layer-group"></i> 混合视图
+                            </button>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn" id="zoomIn">
+                                <i class="fas fa-search-plus"></i> 放大
+                            </button>
+                            <button class="btn" id="zoomOut">
+                                <i class="fas fa-search-minus"></i> 缩小
+                            </button>
+                            <button class="btn" id="reset">
+                                <i class="fas fa-sync-alt"></i> 重置
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="exercise-panel">
+                    <h3><i class="fas fa-pencil-alt"></i> 比例尺练习</h3>
+                    <div class="problem">
+                        <p>地图上华阳寺到主峰的距离为8厘米，当前比例尺为1:25,000。请问实际距离是多少？</p>
+                    </div>
+                    <div class="options">
+                        <div class="option" data-correct="false">1.5公里</div>
+                        <div class="option" data-correct="false">1.8公里</div>
+                        <div class="option" data-correct="true">2.0公里</div>
+                        <div class="option" data-correct="false">2.5公里</div>
+                    </div>
+                    <div class="result"></div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2023 顺昌县中学 | 数学与地理跨学科教学平台</p>
+            <p>华阳山比例尺教学资源 - 七年级校本课程</p>
+            <div class="footer-links">
+                <a href="#"><i class="fas fa-book"></i> 教学资源</a>
+                <a href="#"><i class="fas fa-download"></i> 下载材料</a>
+                <a href="#"><i class="fas fa-question-circle"></i> 帮助中心</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // 初始化地图
+        const map = new BMap.Map('map');
+        // 设置中心点为顺昌县华阳山
+        const point = new BMap.Point(117.8667, 26.8000);
+        map.centerAndZoom(point, 14);
+        
+        // 添加比例尺控件
+        const scaleCtrl = new BMap.ScaleControl({
+            anchor: BMAP_ANCHOR_BOTTOM_LEFT,
+            offset: new BMap.Size(20, 30)
+        });
+        map.addControl(scaleCtrl);
+        
+        // 添加地图类型控件
+        map.addControl(new BMap.MapTypeControl({
+            mapTypes: [BMAP_NORMAL_MAP, BMAP_SATELLITE_MAP, BMAP_HYBRID_MAP]
+        }));
+        
+        // 添加导航控件
+        map.addControl(new BMap.NavigationControl());
+        
+        // 设置初始地图类型为卫星地图
+        map.setMapType(BMAP_SATELLITE_MAP);
+        
+        // 添加华阳山标注点
+        const points = [
+            {name: "华阳山主峰", position: new BMap.Point(117.8667, 26.8000), type: "mountain"},
+            {name: "华阳寺", position: new BMap.Point(117.8600, 26.8050), type: "culture"},
+            {name: "九龙瀑布", position: new BMap.Point(117.8550, 26.7980), type: "water"},
+            {name: "观景平台", position: new BMap.Point(117.8750, 26.7950), type: "view"}
+        ];
+        
+        // 添加标注点
+        points.forEach(pt => {
+            const marker = new BMap.Marker(pt.position);
+            marker.addEventListener("click", function() {
+                const infoWindow = new BMap.InfoWindow(`
+                    <div style="margin:10px;min-width:200px">
+                        <h3 style="color:#1a5fb4;margin-bottom:10px;">${pt.name}</h3>
+                        <p>${getPointDescription(pt)}</p>
+                    </div>
+                `);
+                this.openInfoWindow(infoWindow);
+            });
+            map.addOverlay(marker);
+        });
+        
+        // 获取点描述信息
+        function getPointDescription(point) {
+            switch(point.name) {
+                case "华阳山主峰":
+                    return "华阳山最高点，海拔1300米，登顶可俯瞰顺昌县全境。";
+                case "华阳寺":
+                    return "始建于宋代的古寺，是闽北重要文化遗产。";
+                case "九龙瀑布":
+                    return "由九级瀑布组成的瀑布群，总落差达300米。";
+                case "观景平台":
+                    return "最佳观景点，可欣赏华阳山全景和云海奇观。";
+                default:
+                    return "华阳山重要景点，具有丰富的自然和文化价值。";
+            }
+        }
+        
+        // 更新比例尺显示
+        function updateScaleDisplay() {
+            const zoom = map.getZoom();
+            // 根据缩放级别计算比例尺
+            const scaleValues = {
+                10: '1:1,000,000',
+                11: '1:500,000',
+                12: '1:200,000',
+                13: '1:100,000',
+                14: '1:50,000',
+                15: '1:25,000',
+                16: '1:10,000',
+                17: '1:5,000',
+                18: '1:2,000',
+                19: '1:1,000'
+            };
+            
+            const scaleText = scaleValues[zoom] || '1:50,000';
+            document.querySelector('.scale-value').textContent = scaleText;
+            
+            // 更新比例尺线条长度
+            const scaleLength = Math.min(100, (zoom - 10) * 15);
+            document.querySelector('.scale-line').style.width = scaleLength + '%';
+            
+            // 更新比例尺标签
+            const distance = (1000 / Math.pow(2, 19 - zoom)).toFixed(0);
+            document.querySelector('.scale-label.end').textContent = distance + '米';
+            
+            // 更新比例尺说明
+            document.querySelector('.scale-display > div:last-child').textContent = 
+                `地图上1厘米 ≈ 实地距离${distance}米`;
+        }
+        
+        // 事件监听
+        map.addEventListener("zoomend", updateScaleDisplay);
+        
+        // 地图类型切换
+        document.getElementById('normalMap').addEventListener('click', () => {
+            map.setMapType(BMAP_NORMAL_MAP);
+        });
+        
+        document.getElementById('satelliteMap').addEventListener('click', () => {
+            map.setMapType(BMAP_SATELLITE_MAP);
+        });
+        
+        document.getElementById('hybridMap').addEventListener('click', () => {
+            map.setMapType(BMAP_HYBRID_MAP);
+        });
+        
+        // 缩放控制
+        document.getElementById('zoomIn').addEventListener('click', () => {
+            map.zoomIn();
+        });
+        
+        document.getElementById('zoomOut').addEventListener('click', () => {
+            map.zoomOut();
+        });
+        
+        document.getElementById('reset').addEventListener('click', () => {
+            map.centerAndZoom(point, 14);
+            map.setMapType(BMAP_SATELLITE_MAP);
+        });
+        
+        // 信息窗口切换
+        document.getElementById('infoToggle').addEventListener('click', () => {
+            const infoCard = document.getElementById('locationInfo');
+            if (infoCard.style.display === 'block') {
+                infoCard.style.display = 'none';
+            } else {
+                infoCard.style.display = 'block';
+            }
+        });
+        
+        // 初始化比例尺显示
+        updateScaleDisplay();
+        
+        // 添加华阳山边界
+        setTimeout(() => {
+            const boundsPoints = [
+                new BMap.Point(117.85, 26.78),
+                new BMap.Point(117.85, 26.82),
+                new BMap.Point(117.88, 26.82),
+                new BMap.Point(117.88, 26.78)
+            ];
+            
+            const polygon = new BMap.Polygon(boundsPoints, {
+                strokeColor: "#1a5fb4",
+                strokeWeight: 3,
+                strokeOpacity: 0.8,
+                fillColor: "#1a5fb4",
+                fillOpacity: 0.1
+            });
+            map.addOverlay(polygon);
+            
+            // 添加文字标注
+            const label = new BMap.Label("华阳山自然保护区", {
+                position: new BMap.Point(117.865, 26.815),
+                offset: new BMap.Size(-50, -20)
+            });
+            label.setStyle({
+                color: "#1a5fb4",
+                fontSize: "16px",
+                fontWeight: "bold",
+                backgroundColor: "rgba(255,255,255,0.7)",
+                padding: "5px 10px",
+                borderRadius: "5px",
+                border: "1px solid #1a5fb4"
+            });
+            map.addOverlay(label);
+        }, 2000);
+        
+        // 练习题目交互
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                const correct = this.getAttribute('data-correct') === 'true';
+                const resultDiv = document.querySelector('.result');
+                
+                // 移除所有选项的样式
+                document.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('correct', 'incorrect');
+                });
+                
+                // 添加当前选项的样式
+                this.classList.add(correct ? 'correct' : 'incorrect');
+                
+                // 显示结果
+                resultDiv.textContent = correct ? 
+                    "✓ 回答正确！实际距离 = 8cm × 25,000 = 200,000cm = 2,000m = 2公里" : 
+                    "✗ 回答错误，请重新计算！";
+                resultDiv.className = `result ${correct ? 'correct' : 'incorrect'}`;
+            });
+        });
+    </script>
+</body>
+</html>
